@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aamukampa</title>
+
+<style>
+    body{
+        margin:0;
+        background:#1a1a1a;
+        font-family:Arial, Helvetica, sans-serif;
+        color:white;
+
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-start;
+
+        min-height:100vh;
+        padding-top:40px;
+        overflow-x:hidden;
+    }
+
+    h1{
+        margin-bottom:10px;
+        font-size:42px;
+        letter-spacing:2px;
+    }
+
+    #daysText{
+        margin-bottom:25px;
+        font-size:24px;
+        color:#ffd27a;
+    }
+
+    .comb-container{
+        width:100%;
+        max-height:80vh;
+        display:flex;
+        justify-content:center;
+        align-items:flex-start;
+        margin-bottom:50px;
+    }
+
+    .comb{
+        position:relative;
+        width:max-content;
+        padding:0 40px 80px 40px;
+    }
+
+    /* RUNKO */
+    .spine{
+        position:relative;
+        height:70px;
+        border-radius:10px;
+
+        background:
+            linear-gradient(
+                180deg,
+                #ffcf78 0%,
+                #d98a24 18%,
+                #8a3f00 50%,
+                #d7831f 82%,
+                #ffcf78 100%
+            );
+
+        box-shadow:
+            inset 0 3px 8px rgba(255,255,255,0.35),
+            inset 0 -6px 12px rgba(0,0,0,0.4),
+            0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .spine::before,
+    .spine::after{
+        content:"";
+        position:absolute;
+        top:0;
+        width:22px;
+        height:70px;
+
+        background:inherit;
+        z-index:-1;
+    }
+
+    .spine::before{
+        left:-12px;
+        border-radius:22px 0 0 22px;
+    }
+
+    .spine::after{
+        right:-12px;
+        border-radius:0 22px 22px 0;
+    }
+
+    /* PIIKIT */
+    .teeth{
+        display:flex;
+        align-items:flex-start;
+        gap:2px;
+
+        position:absolute;
+        top:70px;
+        left:44px;
+    }
+
+    .tooth{
+        width:5px;
+        position:relative;
+        transform-origin: top;
+    }
+
+    /* TÄYSI PIIKKI */
+    .active{
+        height:144px;
+
+        border-radius:0 0 3px 3px;
+
+        background:
+            linear-gradient(
+                to bottom,
+                #fff4d6 0%,
+                #d88a2f 40%,
+                #7a3500 100%
+            );
+
+        box-shadow:
+            inset 0 0 2px rgba(255,255,255,0.5),
+            0 0 3px rgba(255,180,80,0.25);
+    }
+
+    /* KATKAISTU PIIKKI */
+    .broken{
+        height:50px;
+
+        border-radius:0 0 2px 2px;
+
+        background:
+            linear-gradient(
+                to bottom,
+                #8d5a2d 0%,
+                #4b2710 100%
+            );
+
+        box-shadow:
+            inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .broken::before{
+        content:"";
+        position:absolute;
+        top:-4px;
+        left:-1px;
+
+        width:7px;
+        height:6px;
+
+        background:#2b1408;
+        border-radius:45% 45% 20% 20%;
+    }
+
+    /* TÄNÄÄN - SYKKIVÄ PIIKKI */
+    .today{
+        animation: pulseToday 1.6s ease-in-out infinite;
+        z-index:2;
+    }
+
+    @keyframes pulseToday {
+        0% {
+            transform: scaleY(1);
+            filter: brightness(1);
+            box-shadow:
+                inset 0 0 2px rgba(255,255,255,0.5),
+                0 0 3px rgba(255,180,80,0.25);
+        }
+        50% {
+            transform: scaleY(1.08);
+            filter: brightness(1.25);
+            box-shadow:
+                0 0 10px rgba(255,210,120,0.7),
+                0 0 20px rgba(255,160,60,0.4);
+        }
+        100% {
+            transform: scaleY(1);
+            filter: brightness(1);
+            box-shadow:
+                inset 0 0 2px rgba(255,255,255,0.5),
+                0 0 3px rgba(255,180,80,0.25);
+        }
+    }
+
+    .logo{
+        position:absolute;
+        top:18px;
+        left:50%;
+        transform:translateX(-50%);
+        font-weight:bold;
+        font-size:20px;
+        color:#f7d18d;
+        letter-spacing:2px;
+    }
+
+    .date{
+        margin-top:30px;
+        color:#999;
+        font-size:14px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Heikin aamukampa</h1>
+
+<div id="daysText"></div>
+
+<div class="comb-container">
+    <div class="comb">
+
+        <div class="spine" id="spine">
+            <div class="logo">109</div>
+        </div>
+
+        <div class="teeth" id="teeth"></div>
+
+    </div>
+</div>
+
+<div class="date">
+    Kohdepäivä: 28.8.2026
+</div>
+
+<script>
+    const startDate = new Date("2026-05-10");
+    const totalDays = 110;
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const msPerDay = 1000 * 60 * 60 * 24;
+
+    const passedDays =
+        Math.floor((today - startDate) / msPerDay);
+
+    const brokenDays = Math.min(
+        Math.max(passedDays, 0),
+        totalDays
+    );
+
+    const activeDays = Math.max(totalDays - brokenDays - 1, 0);
+
+    document.getElementById("daysText").innerHTML =
+        `Piikkejä jäljellä: <strong>${activeDays}</strong> / 109`;
+
+    const teeth = document.getElementById("teeth");
+    const spine = document.getElementById("spine");
+
+    const toothWidth = 5;
+    const gap = 2;
+
+    spine.style.width =
+        totalDays * (toothWidth + gap) + "px";
+
+    for(let i = 0; i < totalDays; i++){
+
+        const tooth = document.createElement("div");
+        tooth.classList.add("tooth");
+
+        if(i < brokenDays){
+            tooth.classList.add("broken");
+        } else {
+            tooth.classList.add("active");
+        }
+
+        // 🔥 tänään-piikki
+        if(i === brokenDays){
+            tooth.classList.add("today");
+        }
+
+        teeth.appendChild(tooth);
+    }
+</script>
+
+</body>
+</html>
