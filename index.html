@@ -15,7 +15,6 @@
         display:flex;
         flex-direction:column;
         align-items:center;
-        justify-content:flex-start;
 
         min-height:100vh;
         padding-top:40px;
@@ -24,32 +23,32 @@
 
     h1{
         margin-bottom:10px;
-        font-size:42px;
+        font-size:clamp(24px, 5vw, 42px);
         letter-spacing:2px;
     }
 
     #daysText{
         margin-bottom:25px;
-        font-size:24px;
+        font-size:clamp(16px, 4vw, 24px);
         color:#ffd27a;
     }
 
     .comb-container{
         width:100%;
-        max-height:80vh;
         display:flex;
         justify-content:center;
         align-items:flex-start;
         margin-bottom:50px;
+        padding-bottom:100px;
     }
 
     .comb{
         position:relative;
         width:max-content;
         padding:0 40px 80px 40px;
+        transform-origin: top center;
     }
 
-    /* RUNKO */
     .spine{
         position:relative;
         height:70px;
@@ -78,7 +77,6 @@
         top:0;
         width:22px;
         height:70px;
-
         background:inherit;
         z-index:-1;
     }
@@ -93,10 +91,8 @@
         border-radius:0 22px 22px 0;
     }
 
-    /* PIIKIT */
     .teeth{
         display:flex;
-        align-items:flex-start;
         gap:2px;
 
         position:absolute;
@@ -110,10 +106,8 @@
         transform-origin: top;
     }
 
-    /* TÄYSI PIIKKI */
     .active{
         height:144px;
-
         border-radius:0 0 3px 3px;
 
         background:
@@ -129,10 +123,8 @@
             0 0 3px rgba(255,180,80,0.25);
     }
 
-    /* KATKAISTU PIIKKI */
     .broken{
         height:50px;
-
         border-radius:0 0 2px 2px;
 
         background:
@@ -159,33 +151,48 @@
         border-radius:45% 45% 20% 20%;
     }
 
-    /* TÄNÄÄN - SYKKIVÄ PIIKKI */
+    /* 🔥 TÄNÄÄN PIIKKI */
     .today{
         animation: pulseToday 1.6s ease-in-out infinite;
-        z-index:2;
+        z-index:3;
+    }
+
+    /* 🔥 ALAPÄÄN HEHKU */
+    .today::after{
+        content:"";
+        position:absolute;
+        bottom:-10px;
+        left:-2px;
+
+        width:9px;
+        height:18px;
+
+        background:linear-gradient(
+            to bottom,
+            rgba(255,220,120,0.9),
+            rgba(255,140,30,0.6),
+            rgba(255,120,20,0)
+        );
+
+        filter: blur(2px);
+        pointer-events:none;
     }
 
     @keyframes pulseToday {
         0% {
             transform: scaleY(1);
             filter: brightness(1);
-            box-shadow:
-                inset 0 0 2px rgba(255,255,255,0.5),
-                0 0 3px rgba(255,180,80,0.25);
         }
         50% {
-            transform: scaleY(1.08);
-            filter: brightness(1.25);
+            transform: scaleY(1.35); /* 🔥 venyy alas mutta pysyy kiinni */
+            filter: brightness(1.4);
             box-shadow:
-                0 0 10px rgba(255,210,120,0.7),
-                0 0 20px rgba(255,160,60,0.4);
+                0 0 12px rgba(255,210,120,0.9),
+                0 0 35px rgba(255,160,60,0.7);
         }
         100% {
             transform: scaleY(1);
             filter: brightness(1);
-            box-shadow:
-                inset 0 0 2px rgba(255,255,255,0.5),
-                0 0 3px rgba(255,180,80,0.25);
         }
     }
 
@@ -272,13 +279,32 @@
             tooth.classList.add("active");
         }
 
-        // 🔥 tänään-piikki
         if(i === brokenDays){
             tooth.classList.add("today");
         }
 
         teeth.appendChild(tooth);
     }
+
+    /* 🔥 AUTOMAATTINEN SKAALAUS */
+    function scaleComb(){
+        const comb = document.querySelector(".comb");
+        const container = document.querySelector(".comb-container");
+
+        const combWidth = comb.offsetWidth;
+        const containerWidth = container.offsetWidth;
+
+        let scale = 1;
+
+        if(combWidth > containerWidth){
+            scale = containerWidth / combWidth;
+        }
+
+        comb.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", scaleComb);
+    window.addEventListener("resize", scaleComb);
 </script>
 
 </body>
